@@ -2,10 +2,10 @@
 # with some stuff taken from the original root CMakeLists.txt that it replaces.
 # It should be kept up-to-date with relevant changes in those files.
 
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.16)
 
 set(DIGIKAM_MAJOR_VERSION "7")
-set(DIGIKAM_MINOR_VERSION "3")
+set(DIGIKAM_MINOR_VERSION "4")
 set(DIGIKAM_PATCH_VERSION "0")
 
 # Suffix to add at end of version string. Usual values are:
@@ -273,8 +273,8 @@ MACRO_BOOL_TO_01(JPEG8_FOUND  LIBRAW_USE_DNGLOSSYCODEC)
 MACRO_BOOL_TO_01(OPENMP_FOUND LIBRAW_USE_OPENMP)
 MACRO_BOOL_TO_01(Jasper_FOUND LIBRAW_USE_REDCINECODEC)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/core/libs/rawengine/libraw/libraw_config.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/core/libs/rawengine/libraw/libraw_config.h)
+#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/core/libs/rawengine/libraw/libraw_config.h.cmake
+#               ${CMAKE_CURRENT_BINARY_DIR}/core/libs/rawengine/libraw/libraw_config.h)
 
 MACRO_BOOL_TO_01(KF5Sane_FOUND                HAVE_KSANE)
 MACRO_BOOL_TO_01(KF5FileMetaData_FOUND        HAVE_KFILEMETADATA)
@@ -382,7 +382,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/core/app/utils/digikam_opencv.h.cmake
 
 add_subdirectory(core/app)
 add_subdirectory(core/libs/dngwriter)
-add_subdirectory(core/libs/rawengine)
+#add_subdirectory(core/libs/rawengine)
 add_subdirectory(core/libs/dplugins)
 add_subdirectory(core/libs/dimg)
 add_subdirectory(core/libs/threads)
@@ -398,13 +398,13 @@ macro(publish_dimg_target target)
     add_library(dimg::${target} ALIAS ${target})
 endmacro()
 
-publish_dimg_target(libraw)
+#publish_dimg_target(libraw)
 publish_dimg_target(digikamcore)
 publish_dimg_target(DImg_PNG_Plugin)
 publish_dimg_target(DImg_TIFF_Plugin)
 publish_dimg_target(DImg_JPEG_Plugin)
 publish_dimg_target(DImg_QImage_Plugin)
-publish_dimg_target(DImg_RAW_Plugin)
+#publish_dimg_target(DImg_RAW_Plugin)
 publish_dimg_target(DImg_HEIF_Plugin)
 publish_dimg_target(DImg_JPEG2000_Plugin)
 publish_dimg_target(DImg_ImageMagick_Plugin)

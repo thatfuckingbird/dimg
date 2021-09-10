@@ -75,7 +75,8 @@ namespace DigikamGenericINatPlugin
 enum
 {
     MAX_OBSERVATION_PHOTOS = 20,
-    MAX_DIMENSION          = 2048
+    MAX_DIMENSION          = 2048,
+    MAX_EDITED_PLACES      = 5
 };
 
 static const QString xmpNameSpaceURI    = QLatin1String("https://inaturalist.org/ns/1.0/");
@@ -173,6 +174,7 @@ public:
     double                  longitude;
     QDateTime               observationDateTime;
 
+    QList<QString>          editedPlaces;
     bool                    inCancel;
     bool                    xmpNameSpace;
     WSSelectUserDlg*        selectUser;
@@ -813,11 +815,16 @@ void INatWindow::slotUser1()
         params.insert(QLatin1String("description"), QJsonValue(description));
     }
 
-    QString placeName = d->placesComboBox->currentText();
+    QString placeName = d->placesComboBox->currentText().simplified();
+    if (placeName != d->placesComboBox->currentText())
+    {
+        d->placesComboBox->setEditText(placeName);
+    }
 
     if (!placeName.isEmpty())
     {
         params.insert(QLatin1String("place_guess"), QJsonValue(placeName));
+        saveEditedPlaceName(placeName);
     }
 
     params.insert(QLatin1String("owners_identification_from_vision"),
@@ -838,11 +845,12 @@ void INatWindow::slotUser1()
                                            isChecked(),
                                            d->resizeCheckBox->isChecked(),
                                            d->dimensionSpinBox->value(),
-                                           d->imageQualitySpinBox->value());
+                                           d->imageQualitySpinBox->value(),
+                                           d->username);
     d->talker->createObservation(QJsonDocument(jsonObservation).toJson(),
                                  request);
 
-    // Clear data, user can work on the next observation.
+    // Clear data, user can start working on the next observation right away.
 
     d->imglst->listView()->clear();
     slotTaxonDeselected();
@@ -950,11 +958,23 @@ void INatWindow::slotObservationDeleted(int observationId)
 
 void INatWindow::slotNearbyPlaces(const QStringList& places)
 {
-    qCDebug(DIGIKAM_WEBSERVICES_LOG) << "Received" << places.count()
-                                     << "nearby places.";
+    qCDebug(DIGIKAM_WEBSERVICES_LOG) << "Received" << places.count() <<
+        "nearby places," << d->editedPlaces.count() << "edited places.";
 
     QString selected = d->placesComboBox->currentText();
     d->placesComboBox->clear();
+
+    for (auto place : d->editedPlaces)
+    {
+        d->placesComboBox->addItem(place);
+
+        if (place == selected)
+        {
+            // Keep previous selection if it is still an option.
+
+            d->placesComboBox->setCurrentText(selected);
+        }
+    }
 
     for (auto place : places)
     {
@@ -984,8 +1004,8 @@ void INatWindow::slotNearbyObservation(const INatTalker::NearbyObservation&
 
     qCDebug(DIGIKAM_WEBSERVICES_LOG) << "Received nearby observation.";
 
-    QString red1(QLatin1String(""));
-    QString red2(QLatin1String(""));
+    QString red1;
+    QString red2;
 
     if (nearbyObservation.m_distanceMeters > d->closestObservationMaxSpB->value())
     {
@@ -1001,7 +1021,7 @@ void INatWindow::slotNearbyObservation(const INatTalker::NearbyObservation&
                         arg(nearbyObservation.m_observationId) +
                         i18n("observation") + QLatin1String("</a>"));
 
-    QString obscured(QLatin1String(""));
+    QString obscured;
 
     if (nearbyObservation.m_obscured)
     {
@@ -1165,6 +1185,28 @@ void INatWindow::slotClosestChanged(int)
     else
     {
         d->closestKnownObservation->clear();
+    }
+}
+
+void INatWindow::saveEditedPlaceName(const QString& text)
+{
+    if (!d->editedPlaces.contains(text))
+    {
+        for (int i = 0; i < d->placesComboBox->count(); ++i)
+        {
+            if (d->placesComboBox->itemText(i) == text)
+            {
+                return;
+            }
+        }
+    }
+
+    d->editedPlaces.removeOne(text);
+    d->editedPlaces.push_front(text);
+
+    if (d->editedPlaces.count() > MAX_EDITED_PLACES)
+    {
+        d->editedPlaces.removeLast();
     }
 }
 

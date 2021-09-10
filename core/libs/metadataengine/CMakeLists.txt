@@ -78,11 +78,21 @@ set(libdmetadata_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/exiftool/exiftoolparser_p.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/exiftool/exiftoolprocess.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/exiftool/exiftoolprocess_p.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/focuspoint/focuspoint.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/focuspoint/focuspoints_extractor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/focuspoint/focuspoints_extractor_canon.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/focuspoint/focuspoints_extractor_nikon.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/focuspoint/focuspoints_extractor_panasonic.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/focuspoint/focuspoints_extractor_sony.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/focuspoint/focuspoints_extractor_default.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/focuspoint/focuspoints_writer.cpp
 )
 
 include_directories(
     $<TARGET_PROPERTY:Qt5::Gui,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:Qt5::Core,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Qt5::Xml,INTERFACE_INCLUDE_DIRECTORIES>
 
     $<TARGET_PROPERTY:exiv2lib,INTERFACE_INCLUDE_DIRECTORIES>
 )

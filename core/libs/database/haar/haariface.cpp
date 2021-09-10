@@ -240,10 +240,10 @@ QPair<double, QMap<qlonglong, double> > HaarIface::bestMatchesForImageWithThresh
                                     type);
 }
 
-QMap<qlonglong,double> HaarIface::bestMatchesForSignature(const QString& signature,
-                                                          const QList<int>& targetAlbums,
-                                                          int numberOfResults,
-                                                          SketchType type)
+QMap<qlonglong, double> HaarIface::bestMatchesForSignature(const QString& signature,
+                                                           const QList<int>& targetAlbums,
+                                                           int numberOfResults,
+                                                           SketchType type)
 {
     QByteArray bytes = QByteArray::fromBase64(signature.toLatin1());
 
@@ -374,7 +374,7 @@ QPair<double, QMap<qlonglong, double> > HaarIface::bestMatchesWithThreshold(qlon
     // similarity are returned. But users expect also to see images
     // with similarity 50,x.
 
-    double supremum = (floor(maximumPercentage*100 + 1.0))/100;
+    double supremum = (floor(maximumPercentage * 100 + 1.0)) / 100;
 
     QMap<qlonglong, double> bestMatches;
     double score, percentage, avgPercentage = 0.0;
@@ -447,7 +447,7 @@ bool HaarIface::fulfillsRestrictions(qlonglong imageId, int albumId,
                                      const QList<int>& targetAlbums,
                                      DuplicatesSearchRestrictions searchResultRestriction)
 {
-    if (imageId == originalImageId)
+    if      (imageId == originalImageId)
     {
         return true;
     }
@@ -463,9 +463,6 @@ bool HaarIface::fulfillsRestrictions(qlonglong imageId, int albumId,
     }
 }
 
-/**
- * This method is the core functionality: It assigns a score to every image in the database.
- */
 QMap<qlonglong, double> HaarIface::searchDatabase(Haar::SignatureData* const querySig,
                                                   SketchType type, const QList<int>& targetAlbums,
                                                   DuplicatesSearchRestrictions searchResultRestriction,
@@ -496,7 +493,7 @@ QMap<qlonglong, double> HaarIface::searchDatabase(Haar::SignatureData* const que
         d->rebuildSignatureCache();
     }
 
-    for (auto it = d->signatureCache()->cbegin() ; it != d->signatureCache()->cend() ; ++it)
+    for (auto it = d->signatureCache()->constBegin() ; it != d->signatureCache()->constEnd() ; ++it)
     {
         // If the image is the original one or
         // No restrictions apply or
@@ -505,6 +502,7 @@ QMap<qlonglong, double> HaarIface::searchDatabase(Haar::SignatureData* const que
         // then calculate the score.
 
         const qlonglong& imageId = it.key();
+
         if (fulfillsRestrictions(imageId, d->albumCache()->value(imageId), originalImageId,
                                  originalAlbumId, targetAlbums, searchResultRestriction))
         {
@@ -552,7 +550,8 @@ QImage HaarIface::loadQImage(const QString& filename)
 bool HaarIface::retrieveSignatureFromDB(qlonglong imageid, Haar::SignatureData& sig)
 {
     QList<QVariant> values;
-    SimilarityDbAccess().backend()->execSql(QString::fromUtf8("SELECT matrix FROM ImageHaarMatrix WHERE imageid=?"),
+    SimilarityDbAccess().backend()->execSql(QString::fromUtf8("SELECT matrix FROM ImageHaarMatrix "
+                                                              " WHERE imageid=?;"),
                                             imageid, &values);
 
     if (values.isEmpty())
@@ -611,7 +610,7 @@ QMap<QString, QString> HaarIface::writeSAlbumQueries(const DuplicatesResultsMap&
 
     QMap<QString, QString> queries;
 
-    for (auto it = searchResults.cbegin() ; it != searchResults.cend(); ++it)
+    for (auto it = searchResults.constBegin() ; it != searchResults.constEnd() ; ++it)
     {
         SearchXmlWriter writer;
         writer.writeGroup();
@@ -775,8 +774,8 @@ HaarIface::DuplicatesResultsMap HaarIface::findDuplicates(const QSet<qlonglong>&
     QPair<double, QMap<qlonglong, double> > bestMatches;
     QList<qlonglong>                        duplicates;
     QSet<qlonglong>                         resultsCandidates;
-    const bool                              singleThread = rangeBegin == images2Scan.cbegin() &&
-                                                           rangeEnd == images2Scan.cend();
+    const bool                              singleThread = ((rangeBegin == images2Scan.constBegin()) &&
+                                                            (rangeEnd   == images2Scan.constEnd()));
 
     // create signature cache map for fast lookup
 
@@ -838,7 +837,7 @@ HaarIface::DuplicatesResultsMap HaarIface::findDuplicates(const QSet<qlonglong>&
 
 double HaarIface::calculateScore(const Haar::SignatureData& querySig,
                                  const Haar::SignatureData& targetSig,
-                                 Haar::Weights& weights,
+                                 const Haar::Weights& weights,
                                  std::reference_wrapper<Haar::SignatureMap>* const queryMaps)
 {
     double score = 0.0;
@@ -852,7 +851,7 @@ double HaarIface::calculateScore(const Haar::SignatureData& querySig,
 
     // Step 2: Decrease the score if query and target have significant coefficients in common
 
-    int x                        = 0;
+    int x        = 0;
 
     for (int channel = 0 ; channel < 3 ; ++channel)
     {

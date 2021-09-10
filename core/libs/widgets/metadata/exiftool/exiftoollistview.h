@@ -29,6 +29,7 @@
 #include <QTreeWidget>
 #include <QWidget>
 #include <QString>
+#include <QStringList>
 #include <QUrl>
 
 // Local includes
@@ -50,15 +51,19 @@ public:
     explicit ExifToolListView(QWidget* const parent);
     ~ExifToolListView() override;
 
-    bool loadFromUrl(const QUrl& url);
+    void loadFromUrl(const QUrl& url);
     QString errorString() const;
 
     QString getCurrentItemKey() const;
     void    setCurrentItemByKey(const QString& itemKey);
 
+    void setGroupList(const QStringList& tagsFilter,
+                      const QStringList& keysFilter = QStringList());
+
 Q_SIGNALS:
 
     void signalTextFilterMatch(bool);
+    void signalLoadingResult(bool ok);
 
 public Q_SLOTS:
 
@@ -66,17 +71,13 @@ public Q_SLOTS:
 
 private Q_SLOTS:
 
+    void slotExifToolDataAvailable();
     void slotSelectionChanged(QTreeWidgetItem*, int);
 
 private:
 
     void setMetadata(const ExifToolParser::ExifToolData& map);
     ExifToolListViewGroup* findGroup(const QString& group);
-
-    void exifToolParseThreaded(const QString& file,
-                               ExifToolParser::ExifToolData* const parsed,
-                               QString* const errorString,
-                               bool* const error);
 
 private:
 

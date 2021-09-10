@@ -63,7 +63,7 @@ cd $ORIG_WD/icon-rcc
 rm -f CMakeCache.txt > /dev/null
 rm -f *.rcc > /dev/null
 
-cmake -DCMAKE_INSTALL_PREFIX="/usr" \
+/opt/cmake/bin/cmake -DCMAKE_INSTALL_PREFIX="/usr" \
       -DCMAKE_BUILD_TYPE=debug \
       -DCMAKE_COLOR_MAKEFILE=ON \
       -Wno-dev \
@@ -128,7 +128,11 @@ cp -r /usr/share/kservicetypes5           ./usr/share
 cp -r /usr/share/kxmlgui5                 ./usr/share
 cp -r /usr/share/kf5                      ./usr/share
 cp -r /usr/share/solid                    ./usr/share
-cp -r /usr/share/OpenCV                   ./usr/share
+
+# depending of OpenCV version installed, data directory is not the same.
+cp -r /usr/share/OpenCV                   ./usr/share  || true
+cp -r /usr/share/opencv4                  ./usr/share  || true
+
 cp -r /usr/share/dbus-1/interfaces/kf5*   ./usr/share/dbus-1/interfaces/
 cp -r /usr/share/dbus-1/services/*kde*    ./usr/share/dbus-1/services/
 cp -r /usr/${LIBSUFFIX}/libexec/kf5       ./usr/lib/libexec/
@@ -310,6 +314,7 @@ echo -e "---------- Clean-up Bundle Directory Contents\n"
 # This list is taken from linuxdeplotqt
 # [https://github.com/probonopd/linuxdeployqt/blob/master/tools/linuxdeployqt/excludelist.h]
 # NOTE: libglapi is included explicity in Krita exclude list.
+# NOTE: with the transition from Mageia6 to 7 to build AppImage libnss* must be included in the bundle (see bug #440689)
 EXCLUDE_FILES="\
 ld-linux.so.2 \
 ld-linux-x86-64.so.2 \
@@ -339,15 +344,6 @@ libjack.so.0 \
 libm.so.6 \
 libmvec.so.1 \
 libnsl.so.1 \
-libnss_compat.so.2 \
-libnss_db.so.2 \
-libnss_dns.so.2 \
-libnss_files.so.2 \
-libnss_hesiod.so.2 \
-libnss_nisplus.so.2 \
-libnss_nis.so.2 \
-libnss3.so \
-libnssutil3.so \
 libp11-kit.so.0 \
 libpangocairo-1.0.so.0 \
 libpthread.so.0 \

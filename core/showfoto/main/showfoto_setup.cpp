@@ -66,6 +66,9 @@ void Showfoto::setupConnections()
     connect(d->thumbBar, SIGNAL(showfotoItemInfoActivated(ShowfotoItemInfo)),
             this, SLOT(slotShowfotoItemInfoActivated(ShowfotoItemInfo)));
 
+    connect(d->folderView, SIGNAL(signalCurrentPathChanged(QString)),
+            this, SLOT(slotOpenFolderFromPath(QString)));
+
     connect(this, SIGNAL(signalSelectionChanged(QRect)),
             d->rightSideBar, SLOT(slotImageSelectionChanged(QRect)));
 
@@ -103,6 +106,14 @@ void Showfoto::setupUserArea()
     QHBoxLayout* const hlay    = new QHBoxLayout(widget);
     m_splitter                 = new Digikam::SidebarSplitter(widget);
 
+    const int spacing          = QApplication::style()->pixelMetric(QStyle::PM_DefaultLayoutSpacing);
+    d->leftSideBar             = new Digikam::Sidebar(widget, m_splitter, Qt::LeftEdge);
+    d->leftSideBar->setObjectName(QLatin1String("ShowFoto Sidebar Left"));
+    d->leftSideBar->setContentsMargins(0, 0, spacing, 0);
+
+    d->folderView              = new ShowfotoFolderViewSideBar(widget);
+    d->leftSideBar->appendTab(d->folderView, d->folderView->getIcon(), d->folderView->getCaption());
+
     KMainWindow* const viewContainer = new KMainWindow(widget, Qt::Widget);
     m_splitter->addWidget(viewContainer);
     m_stackView                      = new Digikam::EditorStackView(viewContainer);
@@ -122,6 +133,7 @@ void Showfoto::setupUserArea()
     d->rightSideBar = new Digikam::ItemPropertiesSideBar(widget, m_splitter, Qt::RightEdge);
     d->rightSideBar->setObjectName(QLatin1String("ShowFoto Sidebar Right"));
 
+    hlay->addWidget(d->leftSideBar);
     hlay->addWidget(m_splitter);
     hlay->addWidget(d->rightSideBar);
     hlay->setContentsMargins(QMargins());
@@ -131,11 +143,11 @@ void Showfoto::setupUserArea()
     // is found, it is honored and deleted. The state will from than on be saved
     // by viewContainers built-in mechanism.
 
-    Qt::DockWidgetArea dockArea = Qt::LeftDockWidgetArea;
+    Qt::DockWidgetArea dockArea = Qt::TopDockWidgetArea;
 
     d->thumbBarDock = new Digikam::ThumbBarDock(viewContainer, Qt::Tool);
     d->thumbBarDock->setObjectName(QLatin1String("editor_thumbbar"));
-    d->thumbBarDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::TopDockWidgetArea  | Qt::BottomDockWidgetArea);
+    d->thumbBarDock->setAllowedAreas(Qt::TopDockWidgetArea  | Qt::BottomDockWidgetArea);
     d->thumbBar     = new ShowfotoThumbnailBar(d->thumbBarDock);
 
     d->thumbBarDock->setWidget(d->thumbBar);

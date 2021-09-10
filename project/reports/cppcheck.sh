@@ -6,6 +6,8 @@
 # http://cppcheck.sourceforge.net/
 # Dependencies : Python::pygments module to export report as HTML.
 #
+# If '--nowebupdate' is passed as argument, static analyzer results are just created locally.
+#
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 #
@@ -51,6 +53,9 @@ cppcheck -j$CPU_CORES \
          --verbose \
          --std=c++14 \
          --library=qt.cfg \
+         --library=opencv2.cfg \
+         --library=boost.cfg \
+         --library=kde.cfg \
          --inline-suppr \
          --xml-version=2 \
          --platform=unix64 \
@@ -74,9 +79,13 @@ cppcheck -j$CPU_CORES \
          --suppress=unusedVariable \
          --suppress=unusedStructMember \
          --suppress=unknownMacro \
+         --suppress=qrandCalled \
+         --suppress=qsrandCalled \
+         --suppress=qSortCalled \
          --suppress=class_X_Y \
          --suppress=ConfigurationNotChecked \
-         --suppress=unmatchedSuppression \
+         --suppress=unmatchedSuppression:* \
+         --suppress=useStlAlgorithm \
          --output-file=report.cppcheck.xml \
          $IGNORE_DIRS \
          $INCLUDE_DIRS \
@@ -87,8 +96,12 @@ cppcheck-htmlreport --file=report.cppcheck.xml \
                     --source-dir=. \
                     --title=$TITLE
 
-# update www.digikam.org report section.
-updateReportToWebsite "cppcheck" $REPORT_DIR $TITLE $(parseGitBranch)
+if [[ $1 != "--nowebupdate" ]] ; then
+
+    # update www.digikam.org report section.
+    updateReportToWebsite "cppcheck" $REPORT_DIR $TITLE $(parseGitBranch)
+
+fi
 
 cd $ORIG_DIR
 

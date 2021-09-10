@@ -56,7 +56,7 @@ static const char* ExifEntryListToIgnore[] =
     "-1"
 };
 
-}
+} // namespace
 
 MakerNoteWidget::MakerNoteWidget(QWidget* const parent, const QString& name)
     : MetadataWidget(parent, name)
@@ -73,7 +73,7 @@ MakerNoteWidget::~MakerNoteWidget()
 {
 }
 
-QString MakerNoteWidget::getMetadataTitle()
+QString MakerNoteWidget::getMetadataTitle() const
 {
     return i18n("MakerNote Exif Tags");
 }
@@ -128,16 +128,22 @@ void MakerNoteWidget::buildView()
     switch (getMode())
     {
         case CUSTOM:
+        {
             setIfdList(getMetadataMap(), getTagsFilter());
             break;
+        }
 
         case PHOTO:
+        {
             setIfdList(getMetadataMap(), QStringList() << QLatin1String("FULL"));
             break;
+        }
 
         default: // NONE
+        {
             setIfdList(getMetadataMap(), QStringList());
             break;
+        }
     }
 
     MetadataWidget::buildView();

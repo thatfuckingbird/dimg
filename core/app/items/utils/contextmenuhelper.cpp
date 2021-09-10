@@ -155,20 +155,12 @@ public:
     }
 };
 
-ContextMenuHelper::ContextMenuHelper(QMenu* const parent, KActionCollection* const actionCollection)
+ContextMenuHelper::ContextMenuHelper(QMenu* const parent)
     : QObject(parent),
       d      (new Private(this))
 {
-    d->parent = parent;
-
-    if (!actionCollection)
-    {
-        d->stdActionCollection = DigikamApp::instance()->actionCollection();
-    }
-    else
-    {
-        d->stdActionCollection = actionCollection;
-    }
+    d->parent              = parent;
+    d->stdActionCollection = DigikamApp::instance()->actionCollection();
 }
 
 ContextMenuHelper::~ContextMenuHelper()
@@ -774,16 +766,6 @@ void ContextMenuHelper::addExportMenu()
     d->parent->addMenu(menuExport);
 }
 
-void ContextMenuHelper::addAlbumActions()
-{
-    QList<QAction*> albumActions;
-
-    if (!albumActions.isEmpty())
-    {
-        d->parent->addActions(albumActions);
-    }
-}
-
 void ContextMenuHelper::addGotoMenu(const imageIds& ids)
 {
     if (d->gotoAlbumAction && d->gotoDateAction)
@@ -1132,7 +1114,7 @@ QList<QAction*> ContextMenuHelper::groupMenuActions(const imageIds& ids)
     else
     {
         QAction* const closeAction = new QAction(i18nc("@action:inmenu", "Group Selected Here"), this);
-        connect(closeAction, SIGNAL(triggered()), 
+        connect(closeAction, SIGNAL(triggered()),
                 this, SIGNAL(signalCreateGroup()));
         actions << closeAction;
 
@@ -1274,6 +1256,17 @@ void ContextMenuHelper::addStandardActionItemDelete(QObject* recv, const char* s
             recv, slot);
 
     addAction(trashAction);
+}
+
+void ContextMenuHelper::addIQSAction(QObject* recv, const char* slot)
+{
+    QAction* const IQSAction = new QAction(QIcon::fromTheme(QLatin1String("")),
+                                           i18ncp("@action:inmenu Pluralized",
+                                                    "Image Quality Sort", "Image Quality Sort",1), d->parent);
+    connect(IQSAction, SIGNAL(triggered()),
+            recv, slot);
+
+    addAction(IQSAction);
 }
 
 QAction* ContextMenuHelper::exec(const QPoint& pos, QAction* at)

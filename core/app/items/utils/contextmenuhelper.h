@@ -42,8 +42,6 @@ class QMenu;
 class QPoint;
 class QString;
 
-class KActionCollection;
-
 namespace Digikam
 {
 
@@ -92,10 +90,8 @@ public:
      * Constructs the helper class.
      *
      * @param parent the menu the helper class is linked to
-     * @param actionCollection the actionCollection that should be used. If not set, the standard
-     * action from DigikamApp is used
      */
-    explicit ContextMenuHelper(QMenu* const parent, KActionCollection* const actionCollection = nullptr);   // clazy:exclude=ctor-missing-parent-argument
+    explicit ContextMenuHelper(QMenu* const parent);   // clazy:exclude=ctor-missing-parent-argument
     ~ContextMenuHelper() override;
 
     /**
@@ -166,6 +162,8 @@ public:
      * the action name and is normally used when deleting more then one item.
      */
     void addStandardActionItemDelete(QObject* recv, const char* slot, int quantity = 1);
+
+    void addIQSAction(QObject* recv, const char* slot);
 
     /**
      * Add the lighttable action to the menu.
@@ -355,8 +353,6 @@ public:
      * Add Export Webservices actions menu.
      */
     void addExportMenu();
-
-    void addAlbumActions();
 
     /**
      * Add a submenu to the parent context menu.

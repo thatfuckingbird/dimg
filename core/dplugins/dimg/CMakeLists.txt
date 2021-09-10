@@ -7,7 +7,7 @@
 add_subdirectory(jpeg)
 add_subdirectory(png)
 add_subdirectory(tiff)
-add_subdirectory(raw)
+#add_subdirectory(raw)
 add_subdirectory(qimage)
 add_subdirectory(heif)
 

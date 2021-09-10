@@ -16,8 +16,8 @@ set(DIGIKAMCORE_OBJECTS
             $<TARGET_OBJECTS:core_jpegutils_obj>
             $<TARGET_OBJECTS:core_threadimageio_obj>
             $<TARGET_OBJECTS:core_dthread_obj>
-            $<TARGET_OBJECTS:core_libraw_obj>
-            $<TARGET_OBJECTS:core_rawengine_obj>
+#            $<TARGET_OBJECTS:core_libraw_obj>
+#            $<TARGET_OBJECTS:core_rawengine_obj>
             $<TARGET_OBJECTS:core_dpluginsinterface_obj>
             $<TARGET_OBJECTS:core_libheif_obj>
             $<TARGET_OBJECTS:core_libde265_obj>
