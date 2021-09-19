@@ -43,6 +43,6 @@ namespace Digikam
         }
     private:
         DPluginLoader() {}
-        static std::vector<DPlugin*> plugins;
+        inline static std::vector<DPlugin*> plugins;
     };
 }

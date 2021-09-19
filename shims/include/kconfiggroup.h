@@ -2,68 +2,75 @@
 
 #include <QVariant>
 #include <QString>
-#include <QStandardPaths>
 
 class KConfigGroup
 {
 public:
-    enum WriteConfigFlag {
-        Persistent = 0x01,
-        Global = 0x02,
-        Localized = 0x04,
-        Notify = 0x08 | Persistent,
-        Normal = Persistent,
-    };
-    typedef QFlags<WriteConfigFlag> WriteConfigFlags;
+    // Implement these:
+
     QStringList groupList() const;
     KConfigGroup group(const QString &group);
-    bool hasGroup (const QString &group) const;
-    void deleteGroup(WriteConfigFlags pFlags=Normal);
+    bool hasGroup(const QString &group) const;
+    void deleteGroup();
+    QVariant readEntry(const QString& key) const;
+    void writeEntry(const QString& key, const QVariant& value);
+    bool sync();
+
+    ///////////////////////////////////////////
+
     template<typename T>
     T readEntry(const QString &key, const T &aDefault) const
     {
-        //TODO
+        const QVariant value = readEntry(key);
+        if(value.isValid()) return value.value<T>();
+        return aDefault;
     }
     template<typename T >
     T readEntry(const char *key, const T &aDefault) const
     {
-        //TODO
+        return readEntry(QString::fromUtf8(key), aDefault);
     }
-    QVariant readEntry(const QString &key, const QVariant &aDefault) const;
-    QVariant readEntry(const char *key, const QVariant &aDefault) const;
-    QString readEntry(const QString &key, const QString &aDefault) const;
-    QString readEntry(const char *key, const QString &aDefault) const;
-    QString readEntry(const QString &key, const char *aDefault=nullptr) const;
-    QString readEntry (const char *key, const char *aDefault=nullptr) const;
-    QString readPathEntry(const QString &pKey, const QString &aDefault) const;
-    QString readPathEntry(const char *key, const QString &aDefault) const;
-    template<typename T >
-    void writeEntry(const char *key, const T &value, WriteConfigFlags pFlags=Normal)
-    {
-        //TODO
+    QString readEntry(const char *key) const {
+        return readEntry(QString::fromUtf8(key), QString{});
+    }
+    QString readPathEntry(const QString &pKey, const QString &aDefault) const {
+        return readEntry(pKey, aDefault);
+    }
+    QString readPathEntry(const char *key, const QString &aDefault) const {
+        return readPathEntry(QString::fromUtf8(key), aDefault);
     }
     template<typename T >
-    void writeEntry(const QString &key, const T &value, WriteConfigFlags pFlags=Normal)
+    void writeEntry(const char *key, const T &value)
     {
-        //TODO
+        writeEntry(QString::fromUtf8(key), value);
     }
-    void writeEntry(const QString &key, const QVariant &value, WriteConfigFlags pFlags=Normal);
-    void writeEntry(const char *key, const QVariant &value, WriteConfigFlags pFlags=Normal);
-    void writePathEntry(const QString &pKey, const QString &path, WriteConfigFlags pFlags=Normal);
-    void writePathEntry(const char *Key, const QString &path, WriteConfigFlags pFlags=Normal);
-    bool sync();
+    template<typename T >
+    void writeEntry(const QString &key, const T &value)
+    {
+        writeEntry(key, QVariant::fromValue(value));
+    }
+    void writePathEntry(const QString &pKey, const QString &path) {
+        writeEntry(pKey, path);
+    }
+    void writePathEntry(const char *Key, const QString &path) {
+        writeEntry(QString::fromUtf8(Key), path);
+    }
 };
 
 class KSharedConfig
 {
 public:
-    enum OpenFlag {
-        IncludeGlobals = 0x01, CascadeConfig = 0x02, SimpleConfig = 0x00, NoCascade = IncludeGlobals,
-        NoGlobals = CascadeConfig, FullConfig = IncludeGlobals | CascadeConfig
-    };
-    typedef QFlags<OpenFlag> OpenFlags;
-    typedef KSharedConfig* Ptr;
-    static Ptr openConfig(const QString &fileName=QString(), OpenFlags mode=FullConfig, QStandardPaths::StandardLocation type=QStandardPaths::GenericConfigLocation);
-    KConfigGroup group(const QString &group);
-    KConfigGroup group(const char *group);
+    // Implement these:
+
+    KConfigGroup group(const QString &groupName);
+
+    ///////////////////////////////////////////
+
+    using Ptr = KSharedConfig*;
+    static Ptr openConfig() {
+        return new KSharedConfig{};
+    }
+    KConfigGroup group(const char *groupName) {
+        return group(QString::fromUtf8(groupName));
+    }
 };

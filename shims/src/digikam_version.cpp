@@ -4,6 +4,6 @@ namespace Digikam
 {
     const QString digiKamVersion()
     {
-        return QStringLiteral("0.0.0");
+        return QStringLiteral("7.4.0");
     }
 }

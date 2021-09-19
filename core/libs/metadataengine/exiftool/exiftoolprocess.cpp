@@ -34,7 +34,6 @@ ExifToolProcess::ExifToolProcess(QObject* const parent)
       d      (new Private(this))
 {
     d->process = new QProcess(this);
-    d->process->setProcessEnvironment(adjustedEnvironmentForAppImage());
 
     connect(d->process, &QProcess::started,
             this, &ExifToolProcess::slotStarted);
